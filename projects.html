@@ -1,0 +1,488 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Projects - Elan Miles</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Core Libraries -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
+    
+    <!-- Custom Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Playfair+Display:wght@400;500;600&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --primary-dark: #1a1a1a;
+            --primary-light: #f8f8f8;
+            --accent-amber: #f59e0b;
+            --secondary-slate: #64748b;
+        }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--primary-dark);
+            color: var(--primary-light);
+            overflow-x: hidden;
+        }
+        
+        .code-font {
+            font-family: 'JetBrains Mono', monospace;
+        }
+        
+        .display-font {
+            font-family: 'Playfair Display', serif;
+        }
+        
+        .gradient-text {
+            background: linear-gradient(45deg, var(--accent-amber), #fbbf24, #f59e0b);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .project-card {
+            background: rgba(248, 248, 248, 0.05);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(248, 248, 248, 0.1);
+            transition: all 0.3s ease;
+        }
+        
+        .project-card:hover {
+            transform: translateY(-8px) rotateX(5deg);
+            box-shadow: 0 20px 40px rgba(245, 158, 11, 0.2);
+            border-color: var(--accent-amber);
+        }
+        
+        .filter-btn {
+            background: rgba(100, 116, 139, 0.2);
+            border: 1px solid rgba(100, 116, 139, 0.3);
+            color: var(--primary-light);
+            transition: all 0.3s ease;
+        }
+        
+        .filter-btn:hover,
+        .filter-btn.active {
+            background: var(--accent-amber);
+            color: var(--primary-dark);
+            border-color: var(--accent-amber);
+        }
+        
+        .nav-link {
+            position: relative;
+            transition: color 0.3s ease;
+        }
+        
+        .nav-link:hover {
+            color: var(--accent-amber);
+        }
+        
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            bottom: -4px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: var(--accent-amber);
+            transition: width 0.3s ease;
+        }
+        
+        .nav-link:hover::after {
+            width: 100%;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(45deg, var(--accent-amber), #fbbf24);
+            color: var(--primary-dark);
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(245, 158, 11, 0.3);
+        }
+        
+        .reveal-element {
+            opacity: 0;
+            transform: translateY(30px);
+        }
+        
+        .reveal-element.revealed {
+            opacity: 1;
+            transform: translateY(0);
+            transition: all 0.6s ease;
+        }
+        
+        .project-icon {
+            width: 100%;
+            height: 192px;
+            background: linear-gradient(135deg, rgba(59, 130, 246, 0.1), rgba(139, 92, 246, 0.1));
+            border: 2px dashed rgba(245, 158, 11, 0.3);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--accent-amber);
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+        
+        .code-snippet {
+            background: #2d2d2d;
+            border-radius: 8px;
+            overflow: hidden;
+            position: relative;
+        }
+        
+        .copy-btn {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            background: rgba(245, 158, 11, 0.8);
+            color: black;
+            border: none;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .copy-btn:hover {
+            background: var(--accent-amber);
+        }
+        
+        .code-block {
+            background: #1a1a1a;
+            border: 1px solid #333;
+            border-radius: 8px;
+            padding: 1rem;
+            margin: 1rem 0;
+            overflow-x: auto;
+        }
+        
+        .code-block pre {
+            margin: 0;
+            color: #f8f8f2;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+        
+        .python-code .keyword { color: #ff79c6; }
+        .python-code .string { color: #f1fa8c; }
+        .python-code .comment { color: #6272a4; }
+        .python-code .function { color: #50fa7b; }
+        
+        .csharp-code .keyword { color: #569cd6; }
+        .csharp-code .string { color: #ce9178; }
+        .csharp-code .comment { color: #6a9955; }
+        .csharp-code .function { color: #dcdcaa; }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="fixed top-0 w-full bg-black bg-opacity-90 backdrop-blur-md z-50 border-b border-gray-800">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <div class="flex items-center">
+                    <a href="index.html" class="text-2xl font-bold gradient-text">Elan Miles</a>
+                </div>
+                <div class="hidden md:block">
+                    <div class="ml-10 flex items-baseline space-x-8">
+                        <a href="index.html" class="nav-link text-white hover:text-amber-400 px-3 py-2 text-sm font-medium">Home</a>
+                        <a href="projects.html" class="nav-link text-amber-400 px-3 py-2 text-sm font-medium">Projects</a>
+                        <a href="about.html" class="nav-link text-white hover:text-amber-400 px-3 py-2 text-sm font-medium">About</a>
+                        <a href="https://github.com/ElanMiles" target="_blank" class="nav-link text-white hover:text-amber-400 px-3 py-2 text-sm font-medium">GitHub</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Header Section -->
+    <section class="pt-24 pb-12 bg-gray-900">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center reveal-element">
+                <h1 class="text-5xl md:text-6xl font-bold mb-6">
+                    <span class="gradient-text">My Projects</span>
+                </h1>
+                <p class="text-xl text-gray-400 max-w-3xl mx-auto">
+                    A collection of my programming projects showcasing various technologies, from Python applications to C# utilities. 
+                    Each project represents a unique challenge and learning experience.
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Project Filters -->
+    <section class="py-8 bg-black bg-opacity-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex flex-wrap justify-center gap-4 reveal-element">
+                <button class="filter-btn active px-6 py-3 rounded-full font-medium" data-filter="all">All Projects</button>
+                <button class="filter-btn px-6 py-3 rounded-full font-medium" data-filter="python">Python</button>
+                <button class="filter-btn px-6 py-3 rounded-full font-medium" data-filter="csharp">C#</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Projects Grid -->
+    <section class="py-20">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                
+                <!-- BAaTD Project -->
+                <div class="project-item project-card rounded-xl p-6 reveal-element" data-categories="python,api">
+                    <div class="project-icon">
+                        <span>🎵</span>
+                    </div>
+                    <h3 class="text-2xl font-bold mb-3">Bandcamp Album and Track Downloader</h3>
+                    <p class="text-gray-400 mb-4">
+                        A comprehensive tool for downloading albums and tracks from Bandcamp with progress tracking, 
+                        organized file management, and support for multiple formats. Features a user-friendly interface 
+                        and robust error handling.
+                    </p>
+                    <div class="flex flex-wrap gap-2 mb-4">
+                        <span class="bg-blue-600 text-white px-3 py-1 rounded-full text-sm">Python</span>
+                        <span class="bg-gray-600 text-white px-3 py-1 rounded-full text-sm">API</span>
+                        <span class="bg-green-600 text-white px-3 py-1 rounded-full text-sm">Audio Processing</span>
+                        <span class="bg-purple-600 text-white px-3 py-1 rounded-full text-sm">HTTP Requests</span>
+                    </div>
+                    <div class="flex gap-3">
+                        <a href="https://github.com/ElanMiles/Bandcamp-Downloader" target="_blank" class="btn-primary px-6 py-2 rounded-lg flex-1 text-center">View Code</a>
+                    </div>
+                </div>
+
+                <!-- YouTube/TikTok Downloader -->
+                <div class="project-item project-card rounded-xl p-6 reveal-element" data-categories="python,ffmpeg">
+                    <div class="project-icon">
+                        <span>🎥</span>
+                    </div>
+                    <h3 class="text-2xl font-bold mb-3">YouTube/TikTok Audio Downloader</h3>
+                    <p class="text-gray-400 mb-4">
+                        Cross-platform audio downloader supporting YouTube and TikTok with high-quality audio extraction, 
+                        format conversion, and metadata tagging. Includes batch processing and playlist support.
+                    </p>
+                    <div class="flex flex-wrap gap-2 mb-4">
+                        <span class="bg-red-600 text-white px-3 py-1 rounded-full text-sm">Python</span>
+                        <span class="bg-purple-600 text-white px-3 py-1 rounded-full text-sm">FFmpeg</span>
+                        <span class="bg-blue-600 text-white px-3 py-1 rounded-full text-sm">Web Scraping</span>
+                        <span class="bg-green-600 text-white px-3 py-1 rounded-full text-sm">Audio Processing</span>
+                    </div>
+                    <div class="flex gap-3">
+                        <a href="https://github.com/ElanMiles/yt-tiktok-audio-downloader" target="_blank" class="btn-primary px-6 py-2 rounded-lg flex-1 text-center">View Code</a>
+                    </div>
+                </div>
+
+                <!-- Live File Tracker -->
+                <div class="project-item project-card rounded-xl p-6 reveal-element" data-categories="csharp,filesystem">
+                    <div class="project-icon">
+                        <span>📁</span>
+                    </div>
+                    <h3 class="text-2xl font-bold mb-3">Live File Tracker</h3>
+                    <p class="text-gray-400 mb-4">
+                        Real-time file monitoring and tracking system with automated processing capabilities. 
+                        Watches specified directories for changes and triggers custom actions based on file events.
+                        Built with .NET 8.0 for optimal performance and modern features.
+                    </p>
+                    <div class="flex flex-wrap gap-2 mb-4">
+                        <span class="bg-yellow-600 text-white px-3 py-1 rounded-full text-sm">New!</span>
+                        <span class="bg-blue-600 text-white px-3 py-1 rounded-full text-sm">C#</span>
+                        <span class="bg-green-600 text-white px-3 py-1 rounded-full text-sm">.NET 8.0</span>
+                        <span class="bg-gray-600 text-white px-3 py-1 rounded-full text-sm">Event Handling</span>
+                    </div>
+                    <div class="flex gap-3">
+                        <a href="https://github.com/ElanMiles/Live-File-Tracker-By-Elan-Miles" target="_blank" class="btn-primary px-6 py-2 rounded-lg flex-1 text-center">View Code</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Code Showcase -->
+    <section class="py-20 bg-gray-900">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16 reveal-element">
+                <h2 class="text-4xl md:text-5xl font-bold mb-6">
+                    <span class="gradient-text">Code Showcase</span>
+                </h2>
+                <p class="text-xl text-gray-400 max-w-3xl mx-auto">
+                    Explore code snippets from my projects to see my programming style and approach to problem-solving.
+                </p>
+            </div>
+            
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                <!-- Python Code Example -->
+                <div class="reveal-element">
+                    <div class="bg-gray-800 rounded-lg p-6">
+                        <h3 class="text-xl font-semibold mb-4 flex items-center">
+                            <span class="w-3 h-3 bg-red-500 rounded-full mr-2"></span>
+                            <span class="w-3 h-3 bg-yellow-500 rounded-full mr-2"></span>
+                            <span class="w-3 h-3 bg-green-500 rounded-full mr-3"></span>
+                            Python - Audio Processing
+                        </h3>
+                        <div class="code-snippet relative">
+                            <button class="copy-btn" onclick="copyToClipboard(this, 'python-code')">Copy</button>
+                            <div class="code-block" id="python-code">
+                                <pre><code>import requests
+from pathlib import Path
+import subprocess
+
+def download_audio(url, output_path):
+    """
+    Download audio from URL with progress tracking
+    """
+    try:
+        response = requests.get(url, stream=True)
+        response.raise_for_status()
+        
+        total_size = int(response.headers.get('content-length', 0))
+        downloaded = 0
+        
+        with open(output_path, 'wb') as f:
+            for chunk in response.iter_content(chunk_size=8192):
+                if chunk:
+                    f.write(chunk)
+                    downloaded += len(chunk)
+                    progress = (downloaded / total_size) * 100
+                    print(f'Download progress: {progress:.1f}%')
+        
+        return True
+    except Exception as e:
+        print(f'Error downloading audio: {e}')
+        return False
+
+# Usage example
+if __name__ == "__main__":
+    url = "https://example.com/audio.mp3"
+    output = "downloaded_audio.mp3"
+    success = download_audio(url, output)
+    print(f'Download {"successful" if success else "failed"}')</code></pre>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- C# Code Example -->
+                <div class="reveal-element">
+                    <div class="bg-gray-800 rounded-lg p-6">
+                        <h3 class="text-xl font-semibold mb-4 flex items-center">
+                            <span class="w-3 h-3 bg-red-500 rounded-full mr-2"></span>
+                            <span class="w-3 h-3 bg-yellow-500 rounded-full mr-2"></span>
+                            <span class="w-3 h-3 bg-green-500 rounded-full mr-3"></span>
+                            C# - File Management
+                        </h3>
+                        <div class="code-snippet relative">
+                            <button class="copy-btn" onclick="copyToClipboard(this, 'csharp-code')">Copy</button>
+                            <div class="code-block" id="csharp-code">
+                                <pre><code>using System;
+using System.IO;
+using System.Linq;
+using System.Collections.Generic;
+
+namespace FileManager
+{
+    public class FileOrganizer
+    {
+        public static void OrganizeByExtension(string sourcePath)
+        {
+            try
+            {
+                var files = Directory.GetFiles(sourcePath);
+                var organizedCount = 0;
+
+                foreach (var file in files)
+                {
+                    var extension = Path.GetExtension(file).ToLower();
+                    var targetFolder = Path.Combine(sourcePath, extension.TrimStart('.'));
+                    
+                    if (!Directory.Exists(targetFolder))
+                    {
+                        Directory.CreateDirectory(targetFolder);
+                    }
+
+                    var fileName = Path.GetFileName(file);
+                    var targetPath = Path.Combine(targetFolder, fileName);
+                    
+                    // Handle duplicate filenames
+                    if (File.Exists(targetPath))
+                    {
+                        var nameWithoutExt = Path.GetFileNameWithoutExtension(file);
+                        var newName = $"{nameWithoutExt}_{DateTime.Now.Ticks}{extension}";
+                        targetPath = Path.Combine(targetFolder, newName);
+                    }
+
+                    File.Move(file, targetPath);
+                    organizedCount++;
+                    Console.WriteLine($"Moved: {fileName} -> {targetFolder}");
+                }
+
+                Console.WriteLine($"Organized {organizedCount} files successfully!");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error organizing files: {ex.Message}");
+            }
+        }
+    }
+}</code></pre>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-black py-12">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center">
+                <div class="mb-6">
+                    <span class="text-3xl font-bold gradient-text">Elan Miles</span>
+                </div>
+                <p class="text-gray-400 mb-4">
+                    Python & C# Developer | Programming Enthusiast | Always Learning
+                </p>
+                <div class="flex justify-center space-x-6 mb-6">
+                    <a href="https://github.com/ElanMiles" target="_blank" class="text-gray-400 hover:text-amber-400 transition-colors">
+                        <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
+                        </svg>
+                    </a>
+                </div>
+                <p class="text-gray-500 text-sm">
+                    © 2025 Elan Miles. All rights reserved.
+                </p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="main.js"></script>
+    <script>
+        // Initialize project filtering
+        document.addEventListener('DOMContentLoaded', function() {
+            initProjectFiltering();
+        });
+
+        function copyToClipboard(button, elementId) {
+            const codeElement = document.getElementById(elementId);
+            const text = codeElement.textContent;
+            
+            navigator.clipboard.writeText(text).then(() => {
+                button.textContent = 'Copied!';
+                setTimeout(() => {
+                    button.textContent = 'Copy';
+                }, 2000);
+            });
+        }
+    </script>
+</body>
+</html>
